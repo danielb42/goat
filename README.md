@@ -17,4 +17,4 @@ at.RemoveJob(jobID)
 ```
 
 ### Prerequisites
-`at(1)` must be present on your system. If it's not, try `apt install at` or `yum install at`.
+`at(1)` must be present on your system. If it's not, try `apt install at` or `yum install at` or `pacman -S at` or `apk add at` according to your linux flavor.
