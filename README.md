@@ -3,9 +3,9 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/danielb42/goat)](https://goreportcard.com/report/github.com/danielb42/goat) 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)  
 
-Golang connector for at(1).  
+Golang connector for `at(1)`.  
 
-Schedule external command executions, powered by the at(1)-utility:
+Schedule external command executions, powered by the `at(1)`-utility:
 
 ```golang
 // let /hello/world.sh be run at <execTime>
