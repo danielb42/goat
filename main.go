@@ -12,11 +12,7 @@ import (
 // AddJob adds a command to the at(1) execution queue. It will be run at atTime.
 func AddJob(command string, atTime time.Time) (int, error) {
 	atCmd := exec.Command("at", "-t", atTime.Format("200601021504"))
-	atStdin, err := atCmd.StdinPipe()
-	if err != nil {
-		return -1, errors.New("could not talk to at")
-	}
-
+	atStdin, _ := atCmd.StdinPipe()
 	io.WriteString(atStdin, command)
 	atStdin.Close()
 
