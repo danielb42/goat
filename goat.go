@@ -49,9 +49,10 @@ func RemoveJob(jobID int) error {
 }
 
 // ClearQueue removes all jobs from the at queue specified by queueLetter.
+// If no queueLetter is given, clears default queue "a".
 func ClearQueue(queueLetter ...string) error {
 	if len(queueLetter) == 0 {
-		return errors.New("no queue letter given")
+		queueLetter = []string{"a"}
 	}
 
 	atqCmd := exec.Command("atq", "-q", fmt.Sprintf("%c", queueLetter[0][0]))
