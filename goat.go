@@ -2,6 +2,7 @@ package goat
 
 import (
 	"errors"
+	"fmt"
 	"io"
 	"os/exec"
 	"regexp"
@@ -10,10 +11,15 @@ import (
 )
 
 // AddJob adds a command to the at(1) execution queue. It will be run at atTime.
-func AddJob(command string, atTime time.Time) (int, error) {
+func AddJob(command string, atTime time.Time, toQueue ...string) (int, error) {
 	atCmd := exec.Command("at", "-t", atTime.Format("200601021504"))
+
+	if len(toQueue) > 0 {
+		atCmd.Args = append(atCmd.Args, "-q", fmt.Sprintf("%c", toQueue[0][0]))
+	}
+
 	atStdin, _ := atCmd.StdinPipe()
-	io.WriteString(atStdin, command)
+	_, _ = io.WriteString(atStdin, command)
 	atStdin.Close()
 
 	atStdout, err := atCmd.CombinedOutput()
@@ -35,6 +41,31 @@ func AddJob(command string, atTime time.Time) (int, error) {
 func RemoveJob(jobID int) error {
 	if err := exec.Command("atrm", strconv.Itoa(jobID)).Run(); err != nil {
 		return errors.New("could not delete job")
+	}
+
+	return nil
+}
+
+// ClearQueue removes all jobs from the at queue specified by queueLetter
+func ClearQueue(queueLetter ...string) error {
+	if len(queueLetter) == 0 {
+		return errors.New("no queue letter given")
+	}
+
+	atqCmd := exec.Command("atq", "-q", fmt.Sprintf("%c", queueLetter[0][0]))
+	atqStdout, err := atqCmd.Output()
+	if err != nil {
+		return errors.New("could not get job IDs")
+	}
+
+	jobIDs := regexp.MustCompile(`(?m:^\d+)`).FindAllStringSubmatch(string(atqStdout), -1)
+
+	for _, idToken := range jobIDs {
+		jobID, _ := strconv.Atoi(idToken[0])
+
+		if err := RemoveJob(jobID); err != nil {
+			return err
+		}
 	}
 
 	return nil
