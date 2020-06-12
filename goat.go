@@ -10,7 +10,9 @@ import (
 	"time"
 )
 
-// AddJob adds a command to the at(1) execution queue. It will be run at atTime.
+// AddJob adds a command to an at(1) execution queue. It will be run at atTime.
+// Optionally, the job can be written to specific queue toQueue, default is "a".
+// Queues must be adressed by a single letter.
 func AddJob(command string, atTime time.Time, toQueue ...string) (int, error) {
 	atCmd := exec.Command("at", "-t", atTime.Format("200601021504"))
 
@@ -37,7 +39,7 @@ func AddJob(command string, atTime time.Time, toQueue ...string) (int, error) {
 	return jobID, nil
 }
 
-// RemoveJob removes the job specified by jobID from the at(1) execution queue.
+// RemoveJob removes the job specified by jobID from the at(1) execution queues.
 func RemoveJob(jobID int) error {
 	if err := exec.Command("atrm", strconv.Itoa(jobID)).Run(); err != nil {
 		return errors.New("could not delete job")
@@ -46,7 +48,7 @@ func RemoveJob(jobID int) error {
 	return nil
 }
 
-// ClearQueue removes all jobs from the at queue specified by queueLetter
+// ClearQueue removes all jobs from the at queue specified by queueLetter.
 func ClearQueue(queueLetter ...string) error {
 	if len(queueLetter) == 0 {
 		return errors.New("no queue letter given")
